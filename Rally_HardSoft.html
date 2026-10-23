@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rally Informático: Hardware vs. Software | SENA</title>
+  <style>
+    /* ==========================================================================
+       1. VARIABLES Y SISTEMA DE DISEÑO (CRYSTAL GLASS / HIGH CONTRAST)
+       ========================================================================== */
+    :root {
+      /* Colores base y fondos translúcidos */
+      --bg-gradient: radial-gradient(circle at 10% 20%, rgba(224, 238, 252, 0.85) 0%, rgba(243, 238, 250, 0.75) 45%, rgba(248, 250, 252, 0.95) 100%);
+      --surface-glass: rgba(255, 255, 255, 0.75);
+      --surface-glass-card: rgba(255, 255, 255, 0.85);
+      --surface-glass-border: rgba(255, 255, 255, 0.95);
+      --surface-glass-hover: rgba(255, 255, 255, 0.92);
+
+      /* Sombras elegantes */
+      --shadow-glass: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+      --shadow-glass-lg: 0 20px 40px -10px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
+      --shadow-glow-blue: 0 0 20px rgba(37, 99, 235, 0.25);
+
+      /* Paleta tipográfica y contraste */
+      --text-main: #0f172a;       /* Slate 900 */
+      --text-muted: #334155;      /* Slate 700 */
+      --text-light: #64748b;      /* Slate 500 */
+      
+      /* Acentos temáticos */
+      --primary: #1d4ed8;         /* Azul eléctrico sobrio */
+      --primary-hover: #1e40af;
+      --hardware-accent: #0284c7; /* Azul petróleo / cian técnico */
+      --software-accent: #6d28d9; /* Violeta tenue estructurado */
+      --sena-accent: #059669;     /* Verde institucional */
+
+      /* Estados de validación */
+      --success-bg: rgba(236, 253, 245, 0.9);
+      --success-border: #10b981;
+      --success-text: #065f46;
+      --error-bg: rgba(254, 242, 242, 0.9);
+      --error-border: #ef4444;
+      --error-text: #991b1b;
+      --warning-bg: rgba(254, 243, 199, 0.85);
+      --warning-border: #f59e0b;
+      --warning-text: #92400e;
+
+      /* Bordes y transiciones */
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --transition-standard: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Respeto por preferencias de accesibilidad */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Reset y base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f1f5f9;
+      background-image: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.55;
+      padding: 1.5rem 1rem 3rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Esferas decorativas de refracción Glassmorphism */
+    .glass-orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(85px);
+      opacity: 0.55;
+    }
+    .glass-orb-1 {
+      width: 450px;
+      height: 450px;
+      background: rgba(37, 99, 235, 0.22);
+      top: -80px;
+      left: -80px;
+    }
+    .glass-orb-2 {
+      width: 480px;
+      height: 480px;
+      background: rgba(139, 92, 246, 0.18);
+      bottom: -100px;
+      right: -80px;
+    }
+    .glass-orb-3 {
+      width: 320px;
+      height: 320px;
+      background: rgba(14, 165, 233, 0.18);
+      top: 40%;
+      right: 15%;
+    }
+
+    /* Contenedor central fluido */
+    .app-layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* Efecto Crystal Glass */
+    .glass-panel {
+      background: var(--surface-glass);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      border: 1px solid var(--surface-glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      transition: var(--transition-standard);
+    }
+
+    /* ==========================================================================
+       2. ENCABEZADO Y MÉTRICAS RÁPIDAS
+       ========================================================================== */
+    .header-panel {
+      padding: 1.75rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+    }
+
+    .header-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-icon-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: var(--shadow-glow-blue);
+      flex-shrink: 0;
+    }
+
+    .brand-icon-badge svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .brand-text h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-text .sena-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-full);
+      background: rgba(5, 150, 105, 0.12);
+      color: var(--sena-accent);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+    }
+
+    .brand-subtitle {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1e40af;
+      margin-top: 0.15rem;
+    }
+
+    .brand-description {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      max-width: 650px;
+    }
+
+    /* Barra de indicadores rápidos */
+    .header-metrics-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .quick-stats-group {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .quick-stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .quick-stat-item strong {
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .quick-stat-badge {
+      padding: 0.2rem 0.65rem;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: var(--radius-full);
+      font-weight: 600;
+    }
+
+    /* Botón Reiniciar Estadísticas */
+    .btn-reset-stats {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      color: var(--text-muted);
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-standard);
+    }
+
+    .btn-reset-stats:hover {
+      background: #ffffff;
+      color: var(--error-text);
+      border-color: rgba(239, 68, 68, 0.4);
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.1);
+    }
+
+    /* ==========================================================================
+       3. PANEL DE CONTROL Y FILTROS DEL SORTEO
+       ========================================================================== */
+    .controls-panel {
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .filter-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .custom-select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 2.25rem 0.75rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+      transition: var(--transition-standard);
+    }
+
+    .custom-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      background: #ffffff;
+    }
+
+    .select-chevron {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--text-light);
+    }
+
+    /* Botón destacado Sortear */
+    .draw-action-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .btn-draw {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.6rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      transition: var(--transition-standard);
+      text-decoration: none;
+    }
+
+    .btn-draw:hover {
+      background: linear-gradient(135deg, #1e40af, #1d4ed8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+    }
+
+    .btn-draw:active {
+      transform: translateY(0);
+    }
+
+    .btn-draw svg {
+      width: 22px;
+      height: 22px;
+      transition: transform 0.4s ease;
+    }
+
+    .btn-draw:hover svg {
+      transform: rotate(45deg);
+    }
+
+    .filter-indicator-text {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      text-align: right;
+    }
+
+    /* ==========================================================================
+       4. TARJETA PRINCIPAL DE PREGUNTA Y ESTADO VACÍO
+       ========================================================================== */
+    .question-panel {
+      padding: 2.25rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Estado inicial / vacío */
+    .empty-state {
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 3rem 1rem;
+      gap: 1.25rem;
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    .empty-state-icon svg {
+      width: 44px;
+      height: 44px;
+    }
+
+    .empty-state h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .empty-state p {
+      max-width: 580px;
+      color: var(--text-muted);
+      font-size: 1.02rem;
+    }
+
+    /* Contenido de la pregunta activa */
+    .question-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .question-content.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .badges-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .badge-id {
+      background: rgba(15, 23, 42, 0.08);
+      color: var(--text-main);
+      border: 1px solid rgba(15, 23, 42, 0.12);
+    }
+
+    .badge-hardware {
+      background: rgba(2, 132, 199, 0.12);
+      color: var(--hardware-accent);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+    }
+
+    .badge-software {
+      background: rgba(109, 40, 217, 0.12);
+      color: var(--software-accent);
+      border: 1px solid rgba(109, 40, 217, 0.3);
+    }
+
+    /* Dificultades */
+    .badge-facil {
+      background: rgba(16, 185, 129, 0.12);
+      color: #047857;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-media {
+      background: rgba(245, 158, 11, 0.12);
+      color: #b45309;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .badge-dificil {
+      background: rgba(234, 88, 12, 0.12);
+      color: #c2410c;
+      border: 1px solid rgba(234, 88, 12, 0.3);
+    }
+    .badge-experto {
+      background: rgba(190, 24, 93, 0.12);
+      color: #9d174d;
+      border: 1px solid rgba(190, 24, 93, 0.3);
+    }
+
+    .turn-status-indicator {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .turn-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .turn-status-dot.active {
+      background: var(--primary);
+      box-shadow: 0 0 6px var(--primary);
+    }
+
+    /* Enunciado */
+    .question-statement {
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.45;
+      padding: 0.25rem 0;
+    }
+
+    /* Cuadrícula de 4 Opciones */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1.5px solid rgba(203, 213, 225, 0.85);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      cursor: pointer;
+      text-align: left;
+      font-size: 1rem;
+      color: var(--text-main);
+      transition: var(--transition-standard);
+      position: relative;
+      outline: none;
+      width: 100%;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #ffffff;
+      border-color: rgba(37, 99, 235, 0.5);
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .option-btn:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .option-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: rgba(226, 232, 240, 0.8);
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition-standard);
+    }
+
+    .option-text {
+      flex: 1;
+      padding-top: 0.2rem;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    /* Estado seleccionado antes de comprobar */
+    .option-btn.selected {
+      background: rgba(239, 246, 255, 0.95);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    .option-btn.selected .option-letter {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Estados posteriores a la comprobación */
+    .option-btn.correct-choice {
+      background: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+    }
+    .option-btn.correct-choice .option-letter {
+      background: var(--success-border) !important;
+      color: #ffffff !important;
+    }
+
+    .option-btn.wrong-choice {
+      background: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: var(--error-text) !important;
+    }
+    .option-btn.wrong-choice .option-letter {
+      background: var(--error-border) !important;
+      color: #ffffff !important;
+    }
+
+    .option-btn.dimmed {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    /* Barra de botones de acción de la pregunta */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      align-items: center;
+      padding-top: 0.5rem;
+    }
+
+    .btn-action {
+      padding: 0.75rem 1.4rem;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-standard);
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn-action:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .btn-check {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    .btn-check:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-1.5px);
+    }
+    .btn-check:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-reveal {
+      background: rgba(255, 255, 255, 0.85);
+      border-color: rgba(203, 213, 225, 0.95);
+      color: var(--text-muted);
+    }
+    .btn-reveal:hover:not(:disabled) {
+      background: #ffffff;
+      border-color: #94a3b8;
+      color: var(--text-main);
+    }
+
+    .btn-next-inline {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.85);
+      border-color: rgba(37, 99, 235, 0.4);
+      color: var(--primary);
+    }
+    .btn-next-inline:hover {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Banner pedagógico de razonamiento */
+    .pedagogical-banner {
+      background: rgba(238, 242, 255, 0.8);
+      border: 1px dashed rgba(99, 102, 241, 0.4);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+      color: #3730a3;
+      margin-top: 0.5rem;
+    }
+
+    .pedagogical-banner svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      color: #4f46e5;
+    }
+
+    /* Guía de análisis oral para el instructor */
+    .analysis-guide-details {
+      background: rgba(248, 250, 252, 0.75);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: var(--radius-md);
+      margin-top: 0.25rem;
+      overflow: hidden;
+    }
+
+    .analysis-guide-summary {
+      padding: 0.75rem 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+
+    .analysis-guide-summary:hover {
+      background: rgba(241, 245, 249, 0.8);
+      color: var(--text-main);
+    }
+
+    .analysis-guide-content {
+      padding: 0.85rem 1.25rem 1.1rem 1.25rem;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .analysis-guide-content ul {
+      padding-left: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    /* ==========================================================================
+       5. RETROALIMENTACIÓN EDUCATIVA EXPANDIDA
+       ========================================================================== */
+    .feedback-container {
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 1rem;
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-status-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .status-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .status-icon-wrap.correct {
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+    }
+    .status-icon-wrap.wrong {
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+    }
+    .status-icon-wrap.revealed {
+      background: rgba(37, 99, 235, 0.15);
+      color: var(--primary);
+    }
+
+    .status-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* Explicación técnica central */
+    .feedback-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .feedback-section-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-light);
+    }
+
+    .feedback-explanation-body {
+      font-size: 0.98rem;
+      color: var(--text-main);
+      line-height: 1.6;
+      background: rgba(248, 250, 252, 0.85);
+      border-left: 4px solid var(--primary);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    /* Desglose de cada opción */
+    .option-analysis-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .option-analysis-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      padding: 0.65rem 0.85rem;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: var(--radius-sm);
+    }
+
+    .option-analysis-item.is-correct-key {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(240, 253, 244, 0.85);
+    }
+
+    .analysis-pill {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .analysis-pill.correct {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .analysis-pill.incorrect {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    /* Tip técnico / aprendizaje adicional */
+    .learning-tip-box {
+      background: var(--warning-bg);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.15rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      color: var(--warning-text);
+      line-height: 1.5;
+    }
+
+    .learning-tip-box svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      color: #d97706;
+      margin-top: 0.15rem;
+    }
+
+    /* ==========================================================================
+       6. PANEL DE RESULTADOS Y ESTADÍSTICAS DE LA SESIÓN
+       ========================================================================== */
+    .results-panel {
+      padding: 1.75rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .results-title-group h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .results-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+    }
+
+    .stat-card-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-light);
+    }
+
+    .stat-card-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .stat-card-value.correct { color: #059669; }
+    .stat-card-value.wrong { color: #dc2626; }
+    .stat-card-value.percent { color: var(--primary); }
+
+    /* Barra de progreso de efectividad */
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: 0.4rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #2563eb);
+      width: 0%;
+      border-radius: var(--radius-full);
+      transition: width 0.4s ease;
+    }
+
+    /* Desglose por categoría y dificultad */
+    .breakdown-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .breakdown-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .breakdown-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-light);
+    }
+
+    .breakdown-chips-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .breakdown-chip {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: var(--radius-sm);
+      padding: 0.35rem 0.65rem;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text-muted);
+    }
+
+    .breakdown-chip strong {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* Sistema de avisos / Toast discreto */
+    .app-toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-glass-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 100;
+    }
+
+    .app-toast.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Pie de página profesional */
+    .app-footer {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-light);
+      padding-top: 0.5rem;
+    }
+
+    /* ==========================================================================
+       7. RESPONSIVIDAD Y AJUSTES DE PANTALLA
+       ========================================================================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 0.75rem 0.5rem 2rem 0.5rem;
+      }
+      .header-panel, .controls-panel, .question-panel, .results-panel {
+        padding: 1.25rem;
+      }
+      .brand-text h1 {
+        font-size: 1.35rem;
+      }
+      .question-statement {
+        font-size: 1.12rem;
+      }
+      .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn-action {
+        width: 100%;
+        justify-content: center;
+      }
+      .btn-next-inline {
+        margin-left: 0;
+      }
+      .results-summary-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Esferas de luz para efecto Glassmorphism -->
+  <div class="glass-orb glass-orb-1" aria-hidden="true"></div>
+  <div class="glass-orb glass-orb-2" aria-hidden="true"></div>
+  <div class="glass-orb glass-orb-3" aria-hidden="true"></div>
+
+  <main class="app-layout">
+
+    <!-- ==========================================================================
+         A. ENCABEZADO Y MÉTRICAS RÁPIDAS
+         ========================================================================== -->
+    <header class="glass-panel header-panel">
+      <div class="header-top-row">
+        <div class="brand-group">
+          <div class="brand-icon-badge" aria-hidden="true">
+            <!-- Icono Hardware + Software integrado -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+              <path d="M7 8l3 3-3 3"></path>
+              <line x1="13" y1="14" x2="17" y2="14"></line>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>
+              RALLY INFORMÁTICO
+              <span class="sena-tag">Actividad SENA</span>
+            </h1>
+            <p class="brand-subtitle">Hardware & Software Challenge</p>
+            <p class="brand-description">Pon a prueba tus conocimientos, analiza el problema y demuestra cómo piensas.</p>
+          </div>
+        </div>
+
+        <button type="button" class="btn-reset-stats" id="btn-reset-session" title="Reiniciar todos los indicadores de la sesión actual">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reiniciar sesión
+        </button>
+      </div>
+
+      <div class="header-metrics-bar">
+        <div class="quick-stats-group">
+          <div class="quick-stat-item">
+            <span>Disponibles en filtro:</span>
+            <span class="quick-stat-badge" id="quick-available-count">20</span>
+          </div>
+          <div class="quick-stat-item">
+            <span>Respondidas:</span>
+            <strong id="quick-answered-count">0</strong>
+          </div>
+          <div class="quick-stat-item">
+            <span>Efectividad:</span>
+            <strong id="quick-accuracy-percent">0%</strong>
+          </div>
+        </div>
+        <div class="filter-indicator-text" id="quick-filter-state">
+          Filtro actual: Todas las categorías • Todos los niveles
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================================================
+         B. PANEL DE CONTROL DEL SORTEO
+         ========================================================================== -->
+    <section class="glass-panel controls-panel" aria-label="Controles del sorteo">
+      <div class="filters-grid">
+        
+        <!-- Filtro por Categoría -->
+        <div class="filter-group">
+          <label for="filter-category" class="filter-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Categoría
+          </label>
+          <div class="select-wrapper">
+            <select id="filter-category" class="custom-select">
+              <option value="Todas">Todas las categorías (Hardware y Software)</option>
+              <option value="Hardware">Solo Hardware (10 preguntas)</option>
+              <option value="Software">Solo Software (10 preguntas)</option>
+            </select>
+            <div class="select-chevron">▼</div>
+          </div>
+        </div>
+
+        <!-- Filtro por Dificultad -->
+        <div class="filter-group">
+          <label for="filter-difficulty" class="filter-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            Dificultad
+          </label>
+          <div class="select-wrapper">
+            <select id="filter-difficulty" class="custom-select">
+              <option value="Todas">Todas las dificultades (Fácil a Experto)</option>
+              <option value="Fácil">Nivel 1: Fácil</option>
+              <option value="Media">Nivel 2: Media</option>
+              <option value="Difícil">Nivel 3: Difícil</option>
+              <option value="Experto">Nivel 4: Experto</option>
+            </select>
+            <div class="select-chevron">▼</div>
+          </div>
+        </div>
+
+        <!-- Botón destacado Sortear -->
+        <div class="draw-action-wrapper">
+          <label class="filter-label" style="visibility: hidden;">Acción</label>
+          <button type="button" class="btn-draw" id="btn-draw-question">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+            Sortear pregunta
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         C. TARJETA PRINCIPAL DE LA PREGUNTA
+         ========================================================================== -->
+    <section class="glass-panel question-panel" id="question-board" aria-live="polite">
+      
+      <!-- Estado Inicial / Sin pregunta sorteada -->
+      <div class="empty-state" id="empty-state-view">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <h2>Estación de Aprendizaje Lista</h2>
+        <p>Selecciona los filtros deseados o deja la configuración por defecto y pulsa el botón <strong>«Sortear pregunta»</strong> para iniciar la ronda del aprendiz o equipo.</p>
+        <button type="button" class="btn-draw" id="btn-start-hero" style="margin-top: 0.5rem;">
+          Comenzar Rally
+        </button>
+      </div>
+
+      <!-- Contenedor dinámico de la pregunta en curso -->
+      <div class="question-content" id="active-question-view">
+        
+        <div class="question-header">
+          <div class="badges-cluster">
+            <span class="badge badge-id" id="badge-question-id">#--</span>
+            <span class="badge" id="badge-question-category">CATEGORÍA</span>
+            <span class="badge" id="badge-question-difficulty">DIFICULTAD</span>
+          </div>
+          <div class="turn-status-indicator">
+            <span class="turn-status-dot active" id="turn-dot"></span>
+            <span id="turn-status-text">Turno en deliberación</span>
+          </div>
+        </div>
+
+        <!-- Enunciado de la pregunta -->
+        <h2 class="question-statement" id="question-text">
+          Cargando enunciado...
+        </h2>
+
+        <!-- Cuatro opciones A, B, C, D -->
+        <div class="options-grid" id="options-container" role="radiogroup" aria-label="Opciones de respuesta">
+          <!-- Inyectado vía JavaScript -->
+        </div>
+
+        <!-- Barra de botones interactivos -->
+        <div class="action-bar">
+          <button type="button" class="btn-action btn-check" id="btn-check-answer" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Comprobar respuesta
+          </button>
+          <button type="button" class="btn-action btn-reveal" id="btn-reveal-answer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+            Revelar respuesta y explicación
+          </button>
+          <button type="button" class="btn-action btn-next-inline" id="btn-next-question">
+            <span>Sortear otra</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+        <!-- Recomendación pedagógica permanente -->
+        <div class="pedagogical-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+          <div>
+            <strong>Recomendación pedagógica SENA:</strong> Antes de responder, explica tu razonamiento. No basta con acertar: demuestra por qué.
+          </div>
+        </div>
+
+        <!-- Guía de preguntas de análisis oral para el instructor -->
+        <details class="analysis-guide-details">
+          <summary class="analysis-guide-summary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Preguntas de análisis para el instructor (discusión grupal)</span>
+          </summary>
+          <div class="analysis-guide-content">
+            <p>Preguntas guía recomendadas para formular oralmente al aprendiz o equipo antes de validar:</p>
+            <ul>
+              <li><strong>Pistas del enunciado:</strong> ¿Qué palabras clave o síntomas técnicos específicos te llevaron a esa hipótesis?</li>
+              <li><strong>Descarte técnico:</strong> ¿Por qué motivo concreto consideras que las demás opciones son inviables o erróneas?</li>
+              <li><strong>Información faltante:</strong> ¿Qué comando, herramienta de diagnóstico o medición física necesitarías para corroborar tu conclusión?</li>
+              <li><strong>Comprobación práctica:</strong> ¿Cómo reproducirías o validarías este escenario en un taller de laboratorio real?</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- ==========================================================================
+             D. RETROALIMENTACIÓN EDUCATIVA (SE REVELA TRAS COMPROBAR O REVELAR)
+             ========================================================================== -->
+        <div class="feedback-container" id="feedback-panel">
+          
+          <div class="feedback-status-header">
+            <div class="status-icon-wrap" id="status-icon-box">
+              <!-- SVG dinámico -->
+            </div>
+            <div>
+              <div class="status-title" id="feedback-status-title">Estado de la respuesta</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted);" id="feedback-status-subtitle">Justificación técnica para el aprendizaje</div>
+            </div>
+          </div>
+
+          <!-- Justificación principal -->
+          <div class="feedback-section">
+            <span class="feedback-section-title">Justificación Técnica de la Solución</span>
+            <div class="feedback-explanation-body" id="feedback-correct-explanation">
+              <!-- Explicación técnica de la respuesta correcta -->
+            </div>
+          </div>
+
+          <!-- Análisis de cada opción (por qué sí / por qué no) -->
+          <div class="feedback-section">
+            <span class="feedback-section-title">Análisis de Opciones y Distractores</span>
+            <div class="option-analysis-list" id="feedback-options-analysis">
+              <!-- Inyectado por JavaScript -->
+            </div>
+          </div>
+
+          <!-- Dato adicional o recomendación profunda -->
+          <div class="learning-tip-box" id="feedback-learning-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"></path>
+              <line x1="9" y1="21" x2="15" y2="21"></line>
+            </svg>
+            <div>
+              <strong>Concepto clave para profundizar:</strong>
+              <span id="feedback-learning-point">Cargando dato adicional...</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         E. PANEL DE RESULTADOS DE LA SESIÓN
+         ========================================================================== -->
+    <section class="glass-panel results-panel" aria-label="Resultados de la sesión">
+      <div class="results-header">
+        <div class="results-title-group">
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+            Desempeño de la Sesión de Formación
+          </h2>
+        </div>
+        <span style="font-size: 0.85rem; color: var(--text-light);">Registro temporal en memoria (sin recarga)</span>
+      </div>
+
+      <!-- Tarjetas de conteo principal -->
+      <div class="results-summary-grid">
+        <div class="stat-card">
+          <span class="stat-card-label">Preguntas respondidas</span>
+          <div class="stat-card-value" id="stats-total-answered">0</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-label">Respuestas correctas</span>
+          <div class="stat-card-value correct" id="stats-total-correct">0</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-label">Respuestas incorrectas</span>
+          <div class="stat-card-value wrong" id="stats-total-wrong">0</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-label">Porcentaje de aciertos</span>
+          <div class="stat-card-value percent" id="stats-accuracy-percent">0%</div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" id="stats-progress-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose por categoría y dificultad -->
+      <div class="breakdown-row">
+        <div class="breakdown-block">
+          <span class="breakdown-title">Distribución por Categoría</span>
+          <div class="breakdown-chips-list">
+            <div class="breakdown-chip">
+              Hardware: <strong id="stat-cat-hardware">0</strong>
+            </div>
+            <div class="breakdown-chip">
+              Software: <strong id="stat-cat-software">0</strong>
+            </div>
+          </div>
+        </div>
+        <div class="breakdown-block">
+          <span class="breakdown-title">Distribución por Dificultad</span>
+          <div class="breakdown-chips-list">
+            <div class="breakdown-chip">Fácil: <strong id="stat-dif-facil">0</strong></div>
+            <div class="breakdown-chip">Media: <strong id="stat-dif-media">0</strong></div>
+            <div class="breakdown-chip">Difícil: <strong id="stat-dif-dificil">0</strong></div>
+            <div class="breakdown-chip">Experto: <strong id="stat-dif-experto">0</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="app-footer">
+      Rally Informático SENA • Estación de Competencias Técnicas • Entorno pedagógico offline
+    </footer>
+
+  </main>
+
+  <!-- Toast flotante para avisos de interfaz -->
+  <div class="app-toast" id="toast-notification" role="status" aria-live="polite">
+    <span id="toast-message">Mensaje del sistema</span>
+  </div>
+
+  <!-- ==========================================================================
+       8. LÓGICA JAVASCRIPT VANILLA Y BANCO DE PREGUNTAS (EXACTAMENTE 20)
+       ========================================================================== -->
+  <script>
+    /**
+     * BANCO DE PREGUNTAS TÉCNICAS (EXACTAMENTE 20 PREGUNTAS)
+     * Distribución estricta:
+     * - Hardware: 10 preguntas (2 Fácil, 4 Media, 2 Difícil, 2 Experto)
+     * - Software: 10 preguntas (2 Fácil, 4 Media, 2 Difícil, 2 Experto)
+     * - Total: 20 preguntas
+     * - Respuestas equilibradas entre opciones A(0), B(1), C(2), D(3).
+     */
+    const QUESTION_BANK = [
+      // ------------------------------------------------------------------------
+      // NIVEL 1. FÁCIL (4 preguntas: 2 Hardware, 2 Software)
+      // ------------------------------------------------------------------------
+      {
+        id: 1,
+        category: "Hardware",
+        difficulty: "Fácil",
+        question: "¿Cuál es la función primordial de la memoria RAM en una computadora y qué característica define su comportamiento al cortar el suministro eléctrico?",
+        options: [
+          "Almacenar de forma permanente los archivos del sistema operativo; sus datos se conservan íntegros sin suministro eléctrico.",
+          "Cargar temporalmente las instrucciones y datos de los procesos en ejecución para acceso veloz de la CPU; es volátil y pierde su información al apagarse.",
+          "Ejecutar los cálculos aritméticos y lógicos del computador; transfiere su contenido automáticamente al disco duro antes de apagarse.",
+          "Controlar las señales de entrada y salida de los puertos USB; sus datos se almacenan de modo no volátil en la memoria ROM."
+        ],
+        correctAnswer: 1, // Opción B
+        explanation: "La memoria RAM (Random Access Memory) es el espacio de almacenamiento temporal de alta velocidad donde el procesador carga el código y datos de programas en ejecución. Su tecnología física se basa en celdas de transistores y condensadores (DRAM) que requieren refresco continuo de energía, por lo que es estrictamente volátil.",
+        optionAnalysis: [
+          "Incorrecto: Describe el almacenamiento secundario no volátil (como un SSD o HDD), no la memoria RAM.",
+          "Correcto: La RAM otorga acceso aleatorio y veloz a los procesos activos y depende de energía constante para retener estados lógicos.",
+          "Incorrecto: La ejecución de operaciones aritméticas y lógicas es responsabilidad de la ALU en la CPU.",
+          "Incorrecto: La coordinación de periféricos compete a controladores, chipsets y buses de E/S; la ROM almacena firmware base como el UEFI/BIOS."
+        ],
+        learningPoint: "Comprender la volatilidad de la RAM permite explicar por qué un fallo repentino de fluido eléctrico ocasiona la pérdida del trabajo que no ha sido guardado en almacenamiento secundario."
+      },
+      {
+        id: 2,
+        category: "Hardware",
+        difficulty: "Fácil",
+        question: "En la clasificación fundamental de periféricos según la dirección del flujo de datos, ¿cuál de los siguientes componentes es un periférico de SALIDA exclusivo?",
+        options: [
+          "Monitor estándar convencional sin tecnología táctil.",
+          "Pantalla táctil capacitiva (touchscreen).",
+          "Teclado ergonómico con iluminación LED programable.",
+          "Unidad de disco de estado sólido externo conectado por USB-C."
+        ],
+        correctAnswer: 0, // Opción A
+        explanation: "Un periférico de salida exclusivo tiene un flujo de datos unidireccional desde la computadora hacia el usuario o el entorno. Un monitor estándar solo recibe señales de video rasterizadas por la GPU para proyectarlas visualmente; no tiene canales de entrada para enviar datos desde el usuario al sistema.",
+        optionAnalysis: [
+          "Correcto: El monitor estándar únicamente recibe señales de video procesadas y las visualiza, sin enviar datos al sistema.",
+          "Incorrecto: Es un periférico mixto o híbrido (recibe pulsos táctiles como entrada y muestra video como salida).",
+          "Incorrecto: Es un periférico de entrada exclusivo, capturando pulsaciones de teclas para el sistema.",
+          "Incorrecto: Las unidades de almacenamiento externo son periféricos mixtos de entrada/salida (lectura y escritura de bloques)."
+        ],
+        learningPoint: "Diferenciar entre entrada, salida y mixto es la base para diagnosticar canales de comunicación y puertos en arquitectura de computadores."
+      },
+      {
+        id: 3,
+        category: "Software",
+        difficulty: "Fácil",
+        question: "¿Cuál es el rol fundamental de un sistema operativo (como GNU/Linux, Windows o macOS) dentro de la arquitectura lógica de un equipo de cómputo?",
+        options: [
+          "Diseñar gráficos vectoriales, editar fotografías y crear bases de datos para usuarios finales.",
+          "Regular físicamente la corriente alterna y la temperatura de los núcleos de silicio en la placa base.",
+          "Actuar como intermediario entre el hardware físico y las aplicaciones de usuario, administrando eficientemente procesador, memoria, almacenamiento y periféricos.",
+          "Sintetizar el código fuente escrito por programadores directamente en circuitos integrados mediante soldadura electrónica."
+        ],
+        correctAnswer: 2, // Opción C
+        explanation: "El sistema operativo es el software de sistema base que administra el hardware y proporciona una capa de abstracción a través de llamadas al sistema (system calls) para que los programas de aplicación puedan ejecutarse sin necesidad de gestionar directamente cada circuito o dispositivo físico.",
+        optionAnalysis: [
+          "Incorrecto: Corresponde a software de aplicación de diseño y productividad, no al sistema operativo.",
+          "Incorrecto: La regulación de potencia y disipación es tarea de hardware (VRMs, fuentes de alimentación, disipadores).",
+          "Correcto: El sistema operativo orquesta los recursos de cómputo y provee la interfaz lógica de comunicación.",
+          "Incorrecto: El código fuente se compila a instrucciones máquina binarias; los circuitos no se modifican físicamente durante la ejecución normal."
+        ],
+        learningPoint: "Sin un sistema operativo, cada desarrollador tendría que escribir controladores propios y rutinas de manejo de memoria específicas para cada modelo de hardware existente."
+      },
+      {
+        id: 4,
+        category: "Software",
+        difficulty: "Fácil",
+        question: "Un aprendiz técnico necesita explicar la diferencia entre «software de sistema» y «software de aplicación». ¿Cuál afirmación expresa la distinción correcta?",
+        options: [
+          "El software de aplicación controla el arranque del equipo (POST) y los controladores de red, mientras que el de sistema crea hojas de cálculo.",
+          "El software de sistema sólo puede estar programado en código máquina puro (ceros y unos) y nunca admite actualizaciones o parches.",
+          "El software de aplicación se ejecuta siempre dentro del procesador antes de que la memoria RAM reciba energía.",
+          "El software de sistema gestiona y mantiene en funcionamiento los recursos del computador (ej. kernel, utilitarios de disco), mientras que el de aplicación permite al usuario realizar tareas específicas (ej. procesadores de texto, navegadores)."
+        ],
+        correctAnswer: 3, // Opción D
+        explanation: "El software de sistema (kernel, servicios del SO, controladores de dispositivo) tiene como misión mantener operativo y seguro el entorno computacional, mientras que el software de aplicación está orientado a satisfacer necesidades concretas del usuario humano (ofimática, diseño, navegación web, contabilidad).",
+        optionAnalysis: [
+          "Incorrecto: Invierte completamente las responsabilidades de ambos tipos de software.",
+          "Incorrecto: El software de sistema suele desarrollarse en lenguajes como C, C++ o Rust y recibe continuas actualizaciones de seguridad.",
+          "Incorrecto: Nada puede ejecutarse en la CPU sin energía previa en la placa base y memoria del sistema.",
+          "Correcto: Define con precisión la jerarquía y el propósito final de cada capa del modelo de software."
+        ],
+        learningPoint: "Esta división jerárquica evita confusiones al auditar licencias y diagnosticar fallas: un error en software de aplicación rara vez paraliza todo el kernel del sistema operativo moderno."
+      },
+
+      // ------------------------------------------------------------------------
+      // NIVEL 2. MEDIA (8 preguntas: 4 Hardware, 4 Software)
+      // ------------------------------------------------------------------------
+      {
+        id: 5,
+        category: "Hardware",
+        difficulty: "Media",
+        question: "Durante una sesión de ensamble, un aprendiz intenta acoplar un procesador de socket AMD AM4 en una placa base con socket Intel LGA 1700. ¿Qué ocurrirá mecánicamente y por qué?",
+        options: [
+          "El procesador encajará perfectamente, pero la BIOS emitirá 3 pitidos largos alertando sobre incompatibilidad de frecuencias.",
+          "El procesador no podrá insertarse físicamente, ya que AM4 utiliza pines en el encapsulado (matriz PGA) y LGA 1700 utiliza pines en la propia placa base (matriz LGA), además de tener medidas y configuraciones de contactos totalmente distintas.",
+          "El procesador encajará si se retira la guía plástica de retención, pero se limitará el bus PCIe a velocidad 1.0.",
+          "El montaje será exitoso si se utiliza una pasta térmica con propiedades dieléctricas de alta densidad."
+        ],
+        correctAnswer: 1, // Opción B
+        explanation: "Los sockets de CPU poseen diseños mecánicos y eléctricos incompatibles entre fabricantes y generaciones. AM4 es un socket tipo PGA (Pin Grid Array, donde los pines están soldados en el procesador y entran en orificios), mientras que LGA 1700 es Land Grid Array (los pines flexibles están en el zócalo de la placa base y hacen contacto con superficies planas del procesador). Intentar forzarlos destruye los pines.",
+        optionAnalysis: [
+          "Incorrecto: Es físicamente imposible insertarlo; la disposición mecánica impide el asiento sin romper pines.",
+          "Correcto: PGA y LGA son arquitecturas mecánicas opuestas e incompatibles en factor de forma y cantidad de contactos.",
+          "Incorrecto: No existe compatibilidad mecánica forzando piezas; provocaría cortocircuito y deformación irreversible.",
+          "Incorrecto: La pasta térmica mejora la transferencia de calor entre el encapsulado (IHS) y el disipador, no resuelve incompatibilidades mecánicas de zócalo."
+        ],
+        learningPoint: "La compatibilidad entre procesador y placa base exige verificar simultáneamente el socket físico y el chipset lógico soportado por el firmware UEFI."
+      },
+      {
+        id: 6,
+        category: "Hardware",
+        difficulty: "Media",
+        question: "¿Cuál es la principal ventaja técnica de una unidad de estado sólido (SSD) con protocolo NVMe sobre una unidad SSD con interfaz SATA III clásica?",
+        options: [
+          "Inmunidad absoluta frente a caídas de tensión eléctrica por prescindir de transistores de silicio.",
+          "Capacidad ilimitada de ciclos de borrado y escritura (TBW) al emplear almacenamiento cuántico sin desgaste.",
+          "Uso directo de los carriles PCI Express con colas de comandos paralelas de hasta 64.000 entradas, superando ampliamente el límite teórico de ~600 MB/s de la interfaz SATA III.",
+          "Menor costo de fabricación debido a que utiliza cables de cinta IDE de 40 contactos."
+        ],
+        correctAnswer: 2, // Opción C
+        explanation: "SATA III fue diseñado originalmente para discos mecánicos lentos y emplea el protocolo AHCI, que solo admite 1 cola con un máximo de 32 comandos y un tope de bus de 6 Gbps (~600 MB/s brutos). NVMe (Non-Volatile Memory Express) se diseñó desde cero para memoria de estado sólido, comunicándose directamente por carriles PCIe y soportando hasta 64.000 colas con 64.000 comandos cada una, reduciendo drásticamente la latencia.",
+        optionAnalysis: [
+          "Incorrecto: Las memorias NAND Flash de los SSD NVMe siguen dependiendo de voltaje estable y transistores Floating Gate o Charge Trap.",
+          "Incorrecto: Los SSD NVMe sufren desgaste por ciclos P/E (Program/Erase) medidos en Terabytes Written (TBW).",
+          "Correcto: El protocolo NVMe sobre bus PCIe elimina el cuello de botella de AHCI/SATA al admitir paralelismo masivo de comandos.",
+          "Incorrecto: NVMe utiliza ranuras M.2 o interfaces U.2/PCIe, no utiliza cables IDE analógicos antiguos."
+        ],
+        learningPoint: "El estándar NVMe aprovecha que las memorias Flash admiten paralelismo interno en múltiples canales, algo que el antiguo estándar AHCI/SATA no podía explotar."
+      },
+      {
+        id: 7,
+        category: "Hardware",
+        difficulty: "Media",
+        question: "Un equipo de cómputo se apaga de golpe e instantáneamente cuando la tarjeta gráfica y la CPU alcanzan una carga del 100% durante una prueba de estrés. No muestra pantalla azul (BSOD) y no vuelve a encender al presionar el botón hasta que se desconecta de la pared durante 15 segundos. ¿Cuál es la causa técnica más probable?",
+        options: [
+          "Corrupción en la tabla de asignación de archivos NTFS del sistema operativo.",
+          "Activación del circuito de protección interna contra sobrepotencia (OPP) o sobrecorriente (OCP) de la fuente de poder ante picos de consumo que exceden su capacidad nominal.",
+          "Agotamiento de la pila de litio botón CR2032 de la tarjeta madre.",
+          "Incompatibilidad de latencias CAS entre los dos módulos de memoria RAM instalados."
+        ],
+        correctAnswer: 1, // Opción B
+        explanation: "Las fuentes de poder ATX de calidad incorporan circuitos de protección activa (OCP, OPP, SCP, OTP). Cuando la demanda combinada de potencia o los transitorios de corriente superan el umbral seguro del diseño, la fuente corta la señal Power Good y apaga el circuito para evitar incendios o daños por sobrecarga. Este estado de bloqueo térmico/eléctrico requiere descargar los condensadores primarios para resetear el chip supervisor.",
+        optionAnalysis: [
+          "Incorrecto: Un fallo en el sistema de archivos produce pantallas azules, reinicios en bucle o errores de lectura, no el corte eléctrico instantáneo de la fuente.",
+          "Correcto: El disparo de las protecciones OPP/OCP apaga la fuente inmediatamente y requiere cortar la corriente alterna para reiniciar el circuito lógico.",
+          "Incorrecto: La pila CR2032 solo mantiene la hora del reloj en tiempo real (RTC) y ajustes CMOS cuando no hay energía externa.",
+          "Incorrecto: La inestabilidad de RAM suele manifestarse como volcados de memoria (BSOD), pantallazos negros con ventiladores encendidos o congelamientos."
+        ],
+        learningPoint: "Al calcular fuentes de alimentación se deben considerar los picos transitorios (power spikes) de GPUs y CPUs modernas, no solo el consumo promedio en reposo o TDP nominal."
+      },
+      {
+        id: 8,
+        category: "Hardware",
+        difficulty: "Media",
+        question: "En una tarjeta madre con 4 ranuras de memoria DIMM distribuidas en dos canales (Canal A: A1, A2; Canal B: B1, B2), ¿por qué los manuales de fabricantes recomiendan instalar dos módulos idénticos en ranuras alternas (como A2 y B2) en vez de contiguas (A1 y A2)?",
+        options: [
+          "Para impedir que los campos electromagnéticos de la tarjeta madre desmagneticen los chips de memoria RAM.",
+          "Porque colocar módulos contiguos fuerza al procesador a trabajar a 5 voltios en lugar de los 1.2 voltios reglamentarios.",
+          "Para activar la arquitectura de doble canal (Dual Channel), lo que duplica el ancho del bus de datos de 64 a 128 bits, incrementando sustancialmente el ancho de banda efectivo entre RAM y CPU.",
+          "Porque si se conectan en A1 y A2, el sistema operativo deshabilita permanentemente los núcleos lógicos del procesador."
+        ],
+        correctAnswer: 2, // Opción C
+        explanation: "El controlador de memoria de las CPUs de consumo posee dos canales independientes de 64 bits cada uno. Al conectar un módulo en el Canal A y otro en el Canal B (siguiendo el esquema recomendado, típicamente A2 y B2 por topología daisy-chain para minimizar reflexiones de señal), la CPU accede a ambos módulos en paralelo, alcanzando un ancho de bus de 128 bits y duplicando la tasa de transferencia teórica.",
+        optionAnalysis: [
+          "Incorrecto: La memoria RAM no es magnética; utiliza condensadores de silicio inmunes a desmagnetización común.",
+          "Incorrecto: El voltaje lo suministran los reguladores de la placa según el estándar JEDEC/XMP sin importar la posición.",
+          "Correcto: Activar Dual Channel (Canal A + Canal B) duplica el bus de datos a 128 bits, elevando el rendimiento en tareas intensivas de memoria.",
+          "Incorrecto: La colocación de la memoria en un solo canal solo limita el ancho de banda (Single Channel), no desactiva núcleos de la CPU."
+        ],
+        learningPoint: "Instalar RAM en Single Channel reduce sensiblemente el rendimiento de las gráficas integradas (iGPU), las cuales dependen directamente del ancho de banda de la memoria del sistema."
+      },
+      {
+        id: 9,
+        category: "Software",
+        difficulty: "Media",
+        question: "Un usuario intenta transferir una imagen ISO de máquina virtual de 6.4 GB a una memoria USB de 32 GB con suficiente espacio libre, pero el sistema emite el error: «El archivo es demasiado grande para el sistema de archivos de destino». ¿Cuál es la causa técnica de esta limitación?",
+        options: [
+          "La memoria USB tiene sectores de hardware quemados que impiden alojar archivos de extensión binaria.",
+          "Las imágenes ISO requieren permisos de superusuario root para escribirse en cualquier medio extraíble.",
+          "El sistema operativo bloqueó la transferencia porque los medios USB solo admiten compresión en formato ZIP.",
+          "La memoria USB está formateada en el sistema de archivos FAT32, cuya arquitectura de punteros de 32 bits restringe el tamaño máximo por archivo individual a exactamente 4 GB (2^32 - 1 bytes)."
+        ],
+        correctAnswer: 3, // Opción D
+        explanation: "El sistema de archivos FAT32 utiliza un campo de 32 bits en la entrada de directorio para registrar el tamaño en bytes de cada archivo. Esto establece un límite matemático infranqueable de 4.294.967.295 bytes (4 GB menos 1 byte). Aunque la memoria tenga 32 GB libres en total, ningún archivo singular puede sobrepasar ese tamaño a menos que se reformatee a NTFS, exFAT o EXT4.",
+        optionAnalysis: [
+          "Incorrecto: Los sectores defectuosos producen errores de E/S o demoras de escritura, no un mensaje exacto de limitación de sistema de archivos.",
+          "Incorrecto: Copiar un archivo a un medio extraíble formateado con permisos estándar no exige privilegios de root salvo políticas empresariales específicas.",
+          "Incorrecto: No existe ninguna restricción de tipos de archivo en medios de almacenamiento masivo USB.",
+          "Correcto: FAT32 limita estrictamente el tamaño de un único archivo a 4 GB debido a la longitud de 32 bits de su campo de tamaño."
+        ],
+        learningPoint: "Para medios extraíbles que deban interoperar entre Windows, macOS y Linux con archivos de más de 4 GB, la solución técnica idónea es formatear en exFAT."
+      },
+      {
+        id: 10,
+        category: "Software",
+        difficulty: "Media",
+        question: "En la administración de procesos de un sistema operativo multitarea, ¿cuál es la diferencia arquitectónica esencial entre un «proceso» y un «hilo de ejecución» (thread)?",
+        options: [
+          "Un proceso posee su propio espacio de direcciones de memoria virtual aislado y recursos asignados por el kernel; un hilo es la unidad básica de ejecución de CPU dentro de un proceso y comparte dicho espacio de memoria con otros hilos del mismo proceso.",
+          "Los procesos se ejecutan exclusivamente en la memoria caché L2, mientras que los hilos operan únicamente en el disco de paginación swap.",
+          "Un hilo cuenta con su propia tabla de descriptores de archivos y permisos independientes, mientras que los procesos no pueden tener más de un descriptor abierto.",
+          "Los hilos no pueden ejecutarse en procesadores multinúcleo modernos, mientras que los procesos se ejecutan siempre de manera síncrona en un solo núcleo."
+        ],
+        correctAnswer: 0, // Opción A
+        explanation: "Un proceso es una instancia completa de un programa en ejecución provisto de su propio mapa de memoria virtual (código, datos, heap, descriptores de archivos). Un hilo (o proceso ligero) es el flujo de instrucciones planificado por el scheduler de la CPU; múltiples hilos coexisten dentro de un mismo proceso y comparten su espacio de memoria, lo que agiliza la comunicación pero exige sincronización cuidadosa.",
+        optionAnalysis: [
+          "Correcto: Un proceso es la unidad de aislamiento de recursos; un hilo es la unidad de ejecución y planificación en CPU.",
+          "Incorrecto: Tanto procesos como hilos operan con instrucciones alojadas en RAM y cargadas dinámicamente en las cachés de la CPU.",
+          "Incorrecto: La tabla de descriptores de archivos y los privilegios pertenecen al proceso contenedor y son compartidos por sus hilos.",
+          "Incorrecto: Los sistemas operativos modernos asignan hilos individuales a distintos núcleos físicos y lógicos en paralelo (multithreading simétrico)."
+        ],
+        learningPoint: "El cambio de contexto (context switch) entre hilos del mismo proceso es mucho más rápido y ligero que entre procesos distintos, ya que no requiere conmutar la tabla de páginas de memoria virtual."
+      },
+      {
+        id: 11,
+        category: "Software",
+        difficulty: "Media",
+        question: "En un entorno de servidores GNU/Linux, un archivo de script de automatización tiene asignados los permisos octales `754` (`rwxr-xr--`). ¿Qué operaciones tienen permitidas el propietario, los miembros del grupo del archivo y los demás usuarios respectivamente?",
+        options: [
+          "Propietario: lectura y escritura; Grupo: solo ejecución; Otros: lectura y escritura completas.",
+          "Propietario: solo lectura; Grupo: control total; Otros: lectura y ejecución.",
+          "Propietario: ejecución únicamente; Grupo: escritura; Otros: acceso denegado total.",
+          "Propietario: control total (lectura, escritura, ejecución); Grupo: lectura y ejecución; Otros: exclusivamente lectura."
+        ],
+        correctAnswer: 3, // Opción D
+        explanation: "En los sistemas de archivos tipo POSIX, los permisos se calculan en base binaria (Lectura r=4, Escritura w=2, Ejecución x=1): \n- Dígito 1 (Propietario): 7 = 4+2+1 (rwx: lectura, escritura, ejecución).\n- Dígito 2 (Grupo): 5 = 4+0+1 (r-x: lectura y ejecución).\n- Dígito 3 (Otros): 4 = 4+0+0 (r--: solo lectura).",
+        optionAnalysis: [
+          "Incorrecto: El número 7 en octal suma 4+2+1, lo que incluye ejecución para el propietario.",
+          "Incorrecto: Invierte las posiciones de los tres dígitos de permisos octales.",
+          "Incorrecto: Los valores no corresponden al cálculo binario de permisos estándar.",
+          "Correcto: 7 equivale a rwx, 5 equivale a r-x y 4 equivale a r--, cubriendo con rigor la terna User-Group-Other."
+        ],
+        learningPoint: "Comprender la notación octal (chmod 754 / 644 / 700) es vital para aplicar el principio de menor privilegio en administración de servidores y despliegue de software."
+      },
+      {
+        id: 12,
+        category: "Software",
+        difficulty: "Media",
+        question: "Según el modelo clásico de ciclo de vida de procesos de un sistema operativo, ¿a qué estado transita un proceso que se encontraba en «Ejecución» (Running) cuando solicita una lectura de datos a un disco de almacenamiento secundario?",
+        options: [
+          "Terminado (Zombie / Defunct).",
+          "Listo para ejecución inmediata (Ready).",
+          "Suspendido en CPU por desbordamiento de pila.",
+          "Bloqueado o en espera (Blocked / Waiting)."
+        ],
+        correctAnswer: 3, // Opción D
+        explanation: "Las operaciones de entrada/salida (E/S) hacia discos o redes son órdenes de magnitud más lentas que las velocidades de la CPU. Para no desperdiciar ciclos de cómputo, el planificador del kernel traslada el proceso al estado 'Bloqueado/En espera' y asigna la CPU a otro proceso en estado 'Listo'. Cuando la controladora de disco finaliza la lectura y emite una interrupción de hardware, el kernel retorna el proceso al estado 'Listo'.",
+        optionAnalysis: [
+          "Incorrecto: Zombie describe un proceso finalizado cuyo código de salida no ha sido leído por su proceso padre.",
+          "Incorrecto: No puede ir directo a Listo sin haber completado la lectura, ya que no tiene aún los datos necesarios para continuar.",
+          "Incorrecto: El desbordamiento de pila es un error fatal de memoria (Stack Overflow) que finaliza el proceso anormalmente.",
+          "Correcto: Pasa a Bloqueado mientras espera que el hardware de E/S complete la transferencia de datos solicitada."
+        ],
+        learningPoint: "Este mecanismo de alternancia entre Listo, Ejecución y Bloqueado es el corazón de la multiprogramación y la eficiencia en sistemas operativos modernos."
+      },
+
+      // ------------------------------------------------------------------------
+      // NIVEL 3. DIFÍCIL (4 preguntas: 2 Hardware, 2 Software)
+      // ------------------------------------------------------------------------
+      {
+        id: 13,
+        category: "Hardware",
+        difficulty: "Difícil",
+        question: "Un servidor de bases de datos sufre caídas drásticas de rendimiento tras 20 minutos de carga sostenida al 100%. Las herramientas de telemetría muestran que la frecuencia del procesador colapsa de 4.2 GHz a 1.2 GHz, mientras los sensores térmicos registran 100°C en los núcleos. ¿Qué mecanismo del silicio se está activando y qué acción técnica prioritaria se debe ejecutar?",
+        options: [
+          "Estrangulamiento térmico (Thermal Throttling) activado por el procesador para evitar su autodestrucción; se debe inspeccionar el sistema de refrigeración, la presión de anclaje y renovar el compuesto térmico degradado.",
+          "Saturación de los carriles PCIe de la tarjeta de red por una tormenta de difusión; se debe sustituir el cableado UTP por fibra óptica.",
+          "Activación de la memoria ECC por acumulación de bits erróneos; se debe desactivar la corrección de errores en la BIOS/UEFI.",
+          "Descalibración del cristal de cuarzo de la placa base; se debe retirar la batería CMOS durante 72 horas continuas."
+        ],
+        correctAnswer: 0, // Opción A
+        explanation: "Los microprocesadores modernos incorporan sensores térmicos en el silicio (DTS). Al alcanzar la temperatura máxima de unión (TjMax, habitualmente 95-105°C), el procesador activa el estrangulamiento térmico (Thermal Throttling), insertando ciclos vacíos y reduciendo drásticamente su multiplicador y voltaje (P-states) para descender la disipación de calor. Es una medida de protección de hardware que evidencia una refrigeración deficiente.",
+        optionAnalysis: [
+          "Correcto: Es la definición técnica de Thermal Throttling; resolverlo demanda optimizar la disipación y el acople térmico.",
+          "Incorrecto: Las tormentas de red saturan la pila de protocolos y buffers, pero no provocan que la CPU alcance 100°C ni baje su multiplicador.",
+          "Incorrecto: La memoria ECC corrige errores de bit único transparentemente sin alterar la frecuencia del reloj de la CPU.",
+          "Incorrecto: El oscilador de cuarzo genera frecuencias de reloj base; no se arregla ni se recalibra dejando el equipo sin batería 72 horas."
+        ],
+        learningPoint: "El Thermal Throttling previene que el silicio se queme, pero en servidores de producción es un síntoma grave que suele delatar fallos de bomba en refrigeración líquida o ventiladores obstruidos."
+      },
+      {
+        id: 14,
+        category: "Hardware",
+        difficulty: "Difícil",
+        question: "Un técnico conecta una tarjeta aceleradora de cálculo PCIe 4.0 x16 en una ranura que mecánicamente mide x16, pero eléctricamente está enrutada a sólo 4 carriles (x4) y pasa a través del chipset de la placa base (PCH) en vez de conectarse a los carriles directos de la CPU. ¿Qué impacto técnico real tendrá esta configuración en el sistema?",
+        options: [
+          "La tarjeta no será detectada por el sistema operativo y el equipo se bloqueará en el código POST 00.",
+          "La tarjeta funcionará a velocidad nativa x16 porque el chipset multiplica los carriles mediante overclocking dinámico del bus.",
+          "La tarjeta operará correctamente pero su ancho de banda máximo quedará limitado al de una conexión x4, y las transferencias sufrirán mayor latencia al compartir el enlace de interconexión (como DMI) entre el chipset y la CPU.",
+          "La tarjeta forzará a la memoria RAM a operar en modo mono-canal asíncrono para compensar la falta de líneas PCIe."
+        ],
+        correctAnswer: 2, // Opción C
+        explanation: "El estándar PCI Express permite negociación dinámica de ancho de carril (Lane Negotiation). Un dispositivo x16 puede operar en ranuras x4 o x8 sin dañarse ni generar error crítico. Sin embargo, su tasa de transferencia de datos queda estrangulada al número físico de carriles disponibles (x4), y al pasar por el chipset, el tráfico debe disputar el bus de enlace ascendente hacia la CPU (como el DMI en Intel) con los demás controladores integrados (SATA, USB, audio), sumando latencia.",
+        optionAnalysis: [
+          "Incorrecto: El protocolo PCIe es retrocompatible y negocia automáticamente anchos de carril menores (x1, x2, x4, x8).",
+          "Incorrecto: El chipset no puede multiplicar carriles físicos ni sobrepasar el límite de líneas eléctricas soldadas.",
+          "Correcto: Operará en modo degradado a x4 y añadirá latencia por el salto adicional a través del bus del chipset.",
+          "Incorrecto: Las líneas PCIe y los canales de memoria RAM poseen controladores y buses físicos completamente separados en el procesador."
+        ],
+        learningPoint: "Revisar el diagrama de bloques (Block Diagram) de la placa madre en el manual técnico permite identificar qué ranuras van directas a la CPU y cuáles dependen del chipset."
+      },
+      {
+        id: 15,
+        category: "Software",
+        difficulty: "Difícil",
+        question: "En un servidor con 16 GB de RAM física, múltiples servicios pesados saturan la memoria. El administrador detecta que la CPU tiene baja utilización (menos del 15%), pero la cola del disco de almacenamiento está permanentemente al 100% y el sistema apenas responde a las peticiones. ¿Cuál es el diagnóstico técnico riguroso de este fenómeno?",
+        options: [
+          "Agotamiento del espacio de nombres en el registro de inicio maestro MBR del disco.",
+          "El sistema operativo ha entrado en hiperpaginación (Thrashing): el conjunto de trabajo (Working Set) de los procesos supera la memoria física disponible, provocando que el kernel dedique casi todo el tiempo a intercambiar páginas entre RAM y swap en vez de ejecutar código útil.",
+          "Interbloqueo irreversible (Deadlock) provocado por instrucciones de 64 bits ejecutándose en hilos de 32 bits.",
+          "Saturación de la memoria ROM Flash provocada por desbordamiento de búfer en el microcódigo de la CPU."
+        ],
+        correctAnswer: 1, // Opción B
+        explanation: "La hiperpaginación o Thrashing ocurre cuando el conjunto de páginas de memoria que los procesos activos necesitan frecuentemente supera la capacidad de la memoria RAM física. En consecuencia, cada fallo de página desaloja otra página que inmediatamente vuelve a ser necesitada. La CPU pasa la mayor parte del tiempo ociosa esperando transferencias de E/S de disco mientras el subsistema de memoria virtual colapsa por constante intercambio de páginas.",
+        optionAnalysis: [
+          "Incorrecto: El MBR solo se lee durante el arranque del equipo para localizar particiones; no interviene en la gestión de memoria en caliente.",
+          "Correcto: Es la definición formal de Thrashing: la tasa de fallos de página es tan alta que el sistema gasta más tiempo paginando que procesando.",
+          "Incorrecto: El deadlock ocurre por contención de recursos lógicos/bloqueos entre procesos, no por mezcla de arquitecturas de 32/64 bits.",
+          "Incorrecto: La ROM Flash no almacena memoria de trabajo ni interactúa con la paginación del sistema operativo."
+        ],
+        learningPoint: "Para mitigar el Thrashing en producción se debe agregar más memoria RAM física, reducir la concurrencia de procesos o ajustar los límites de memoria mediante contenedores (cgroups en Linux)."
+      },
+      {
+        id: 16,
+        category: "Software",
+        difficulty: "Difícil",
+        question: "Cuando un programa ejecutado en modo usuario (Ring 3) necesita crear un nuevo archivo en el disco, ¿cuál es el mecanismo exacto que asegura el aislamiento del sistema y la integridad de los recursos?",
+        options: [
+          "El programa accede de manera directa a los registros físicos de memoria del controlador NVMe/SATA sin mediación del sistema operativo.",
+          "El hilo de la aplicación modifica la tabla de particiones directamente mediante punteros de bajo nivel en lenguaje ensamblador.",
+          "El programa invoca una llamada al sistema (system call), lo que provoca una transición de privilegio controlada por hardware hacia el modo núcleo (Ring 0 / Kernel Mode), donde el sistema operativo valida los permisos antes de realizar la operación física de E/S.",
+          "El procesador destruye el proceso y transfiere la petición a la memoria CMOS para que esta ejecute la escritura."
+        ],
+        correctAnswer: 2, // Opción C
+        explanation: "Las arquitecturas de CPU modernas implementan anillos de protección de hardware (Rings). Las aplicaciones de usuario corren en Ring 3 con privilegios restringidos y no pueden comunicarse directamente con los dispositivos de hardware. Para operaciones privilegiadas (como escribir en disco), ejecutan una instrucción de syscall (como `syscall` en x86-64 o `svc` en ARM) que genera una trampa/interrupción, transfiriendo el control de forma segura al kernel en Ring 0 para verificar permisos y realizar la E/S.",
+        optionAnalysis: [
+          "Incorrecto: El acceso directo desde modo usuario causaría una excepción de violación de acceso a memoria (General Protection Fault / SIGSEGV).",
+          "Incorrecto: Las tablas de partición no se tocan durante la creación normal de archivos y están protegidas por el kernel.",
+          "Correcto: Las llamadas al sistema proporcionan la interfaz segura y auditada entre el espacio de usuario (Ring 3) y el kernel (Ring 0).",
+          "Incorrecto: La memoria CMOS contiene unos pocos bytes para el reloj RTC y configuración UEFI; no procesa archivos."
+        ],
+        learningPoint: "Este mecanismo de doble modo (User Mode / Kernel Mode) garantiza que un fallo o software malicioso en una aplicación no corrompa directamente las estructuras de bajo nivel de todo el equipo."
+      },
+
+      // ------------------------------------------------------------------------
+      // NIVEL 4. EXPERTO (4 preguntas: 2 Hardware, 2 Software)
+      // ------------------------------------------------------------------------
+      {
+        id: 17,
+        category: "Hardware",
+        difficulty: "Experto",
+        question: "En una arquitectura multinúcleo x86-64, dos hilos que se ejecutan en núcleos físicos distintos leen y modifican con alta frecuencia dos variables independientes. Sin embargo, ambas variables residen consecutivamente dentro del mismo bloque de 64 bytes de memoria. Aunque no hay colisión lógica de datos entre los hilos, el rendimiento cae estrepitosamente. ¿Qué fenómeno de bajo nivel describe con precisión este cuello de botella?",
+        options: [
+          "Falsa compartición (False Sharing): el protocolo de coherencia de caché (como MESI o MOESI) invalida continuamente toda la línea de caché de 64 bytes entre los núcleos cada vez que uno de ellos escribe, forzando recargas constantes desde niveles inferiores de memoria.",
+          "Desincronización del bucle de enganche de fase (PLL) del microprocesador al cruzar registros de instrucciones AVX-512.",
+          "Saturación del bus DMI 4.0 provocada por un desbordamiento de búfer en las líneas de interrupción APIC de la tarjeta madre.",
+          "Degradación por efecto túnel cuántico en los condensadores de retención de la memoria estática L1."
+        ],
+        correctAnswer: 0, // Opción A
+        explanation: "Las memorias caché no mueven bytes individuales, sino líneas de caché completas (típicamente de 64 bytes). Con el fenómeno de False Sharing, aunque dos variables son independientes en el código, al compartir la misma línea de caché física, la escritura de un núcleo en la variable A hace que el protocolo de coherencia (ej. MESI) marque toda la línea como inválida en la caché del otro núcleo que trabaja con la variable B. Esto genera un ping-pong constante de transferencias de bus y pérdida de rendimiento.",
+        optionAnalysis: [
+          "Correcto: False Sharing es uno de los problemas de rendimiento más complejos en concurrencia masiva a nivel de arquitectura de hardware.",
+          "Incorrecto: El PLL estabiliza frecuencias de reloj; no tiene relación con el empaquetado de variables en líneas de caché.",
+          "Incorrecto: El bus DMI conecta la CPU con el chipset; el tráfico de coherencia L1/L2 entre núcleos ocurre dentro de la interconexión interna del procesador (Mesh/Ring Bus).",
+          "Incorrecto: Es un problema puramente lógico del protocolo de coherencia de caché, no un fenómeno de degradación atómica en silicio."
+        ],
+        learningPoint: "Para evitar False Sharing en software de alto rendimiento, los desarrolladores aplican alineación y relleno de memoria (padding) para que las variables concurrentes ocupen líneas de caché distintas."
+      },
+      {
+        id: 18,
+        category: "Hardware",
+        difficulty: "Experto",
+        question: "En servidores de virtualización de alta densidad que utilizan acceso directo a memoria (DMA) para tarjetas de red o almacenamiento passthrough hacia máquinas virtuales, ¿cuál es el rol crítico de una unidad IOMMU (como Intel VT-d o AMD-Vi)?",
+        options: [
+          "Traducir las direcciones virtuales de memoria vistas por el dispositivo a direcciones físicas del host y proveer aislamiento de memoria, impidiendo que un periférico malicioso o mal configurado acceda por DMA a regiones arbitrarias de la RAM de otras máquinas virtuales o del hipervisor.",
+          "Multiplicar por cuatro la tasa de refresco eléctrico de los condensadores DRAM mediante multiplexación por división de código.",
+          "Convertir las señales analógicas de los puertos PCIe en paquetes de radiofrecuencia compatibles con la arquitectura ARM.",
+          "Reemplazar completamente a la unidad MMU del procesador para que el sistema operativo no tenga que crear tablas de páginas."
+        ],
+        correctAnswer: 0, // Opción A
+        explanation: "Tradicionalmente, un periférico con soporte DMA maestro de bus puede leer o escribir directamente en cualquier dirección física de la memoria RAM del sistema, lo que representa un grave vector de seguridad y estabilidad en virtualización. La IOMMU (Input-Output Memory Management Unit) se sitúa entre el bus PCIe y la memoria, traduciendo direcciones de E/S (IOVA) a direcciones físicas reales y aplicando tablas de protección que confinan el acceso DMA exclusivamente a las páginas asignadas a esa máquina virtual.",
+        optionAnalysis: [
+          "Correcto: La IOMMU ofrece traducción de direcciones y protección de aislamiento de memoria para DMA en entornos virtualizados.",
+          "Incorrecto: El refresco de DRAM es gestionado exclusivamente por el controlador de memoria integrado (IMC) de la placa/CPU.",
+          "Incorrecto: PCIe es un bus puramente digital punto a punto; no se convierte en radiofrecuencia para ARM en placas x86.",
+          "Incorrecto: La MMU traduce memoria para los núcleos de CPU; la IOMMU complementa a la MMU traduciendo memoria para los dispositivos periféricos."
+        ],
+        learningPoint: "Sin soporte de hardware IOMMU habilitado en la BIOS/UEFI, tecnologías críticas como SR-IOV (Single Root I/O Virtualization) y passthrough de GPU no pueden operar con seguridad."
+      },
+      {
+        id: 19,
+        category: "Software",
+        difficulty: "Experto",
+        question: "En un sistema operativo multihilo, dos hilos concurrentes ejecutan en paralelo la instrucción `contador = contador + 1` sobre una variable global compartida que inicialmente vale 10. Si no se utiliza ninguna primitiva de sincronización, ¿por qué el valor final puede quedar en 11 en lugar de 12 y cuál es la denominación técnica de esta anomalía?",
+        options: [
+          "Es un fallo de segmentación (Segmentation Fault); ocurre porque la ALU pierde el acarreo binario al procesar números impares.",
+          "Es un desbordamiento de búfer (Buffer Overflow); el valor se trunca automáticamente a la potencia de dos inferior más cercana.",
+          "Es una trampa de página nula (Null Pointer Exception); la variable es purgada de la tabla de símbolos del enlazador dinámico.",
+          "Es una condición de carrera (Race Condition); la operación no es atómica en lenguaje ensamblador (consta de lectura en registro, incremento y escritura en memoria), por lo que un hilo puede sobrescribir el resultado del otro si sus operaciones se intercalan."
+        ],
+        correctAnswer: 3, // Opción D
+        explanation: "En código máquina, `contador++` no es una operación atómica. Se descompone típicamente en 3 pasos: 1) Mover valor de memoria a registro CPU (ej. `MOV EAX, [mem]`), 2) Incrementar registro (`ADD EAX, 1`), 3) Escribir registro en memoria (`MOV [mem], EAX`). Si ambos hilos leen el valor 10 antes de que alguno escriba, ambos calcularán localmente 11 y ambos escribirán 11 en memoria, perdiéndose un incremento. Esto se conoce como Condición de Carrera y se resuelve con primitivas atómicas o exclusión mutua (Mutex).",
+        optionAnalysis: [
+          "Incorrecto: El fallo de segmentación es un intento de acceso a direcciones de memoria inválidas o sin permiso.",
+          "Incorrecto: Un buffer overflow es la escritura fuera de los límites de un arreglo en la pila o montón.",
+          "Incorrecto: La excepción de puntero nulo se produce al desreferenciar la dirección 0x0, no al incrementar variables existentes.",
+          "Correcto: Es la definición exacta de Condición de Carrera provocada por la falta de atomicidad en operaciones sobre memoria compartida."
+        ],
+        learningPoint: "En sistemas operativos modernos, las condiciones de carrera en el kernel pueden permitir escalada de privilegios si dos hilos disputan descriptores de seguridad sin bloqueos adecuados."
+      },
+      {
+        id: 20,
+        category: "Software",
+        difficulty: "Experto",
+        question: "En la arquitectura de memoria virtual paginada de un sistema operativo, ¿cuál es la secuencia exacta de eventos de hardware y software cuando una instrucción de CPU solicita acceso a una dirección de memoria cuya traducción no está en el TLB y cuyo bit de presencia en la Tabla de Páginas está en 0?",
+        options: [
+          "La CPU se reinicia automáticamente y la BIOS reasigna los canales de memoria RAM en modo a prueba de fallos.",
+          "Ocurre un TLB Miss; la unidad MMU realiza el recorrido de la tabla de páginas (Page Walk), detecta el bit de presencia en 0 y dispara una excepción de hardware tipo Fallo de Página (Page Fault); el kernel atiende la interrupción en Ring 0, carga la página requerida desde el almacenamiento secundario (swap/archivo) a un marco libre de RAM, actualiza la tabla de páginas y reanuda la instrucción original.",
+          "La MMU copia el código del kernel a la memoria caché L1 para emular el dato faltante mediante microinstrucciones de acceso aleatorio.",
+          "El sistema operativo envía una señal de interrupción no enmascarable (NMI) a la tarjeta madre para desconectar el bus PCIe hasta la siguiente instrucción."
+        ],
+        correctAnswer: 1, // Opción B
+        explanation: "El flujo de memoria virtual es una coreografía perfecta entre hardware y software: 1) La CPU busca la traducción en el Translation Lookaside Buffer (TLB). 2) Al fallar (TLB Miss), la MMU recorre la estructura de tablas de páginas multinivel (CR3 en x86). 3) Si el bit de presencia es 0, la página no reside en memoria física: la MMU lanza una interrupción vectorial (#PF, Page Fault). 4) El kernel suspende el hilo, busca la página en disco/swap, la ubica en un marco libre de memoria RAM, actualiza la Page Table con el bit de presencia en 1, invalida el TLB y reejecuta exactamente la instrucción que provocó la falla de forma transparente para el usuario.",
+        optionAnalysis: [
+          "Incorrecto: Un fallo de página no es un error fatal de hardware; es una rutina operativa normal y continua de los sistemas con memoria virtual.",
+          "Correcto: Describe con precisión técnica la secuencia TLB Miss -> Page Walk -> Page Fault Exception -> Manejador del Kernel -> Reejecución.",
+          "Incorrecto: La MMU no emula datos ni copia código del kernel a la caché L1 en fallos de página.",
+          "Incorrecto: La NMI se reserva para fallos catastróficos de hardware (como paridad de memoria o caídas críticas de voltaje)."
+        ],
+        learningPoint: "Comprender la mecánica de los Page Faults permite interpretar métricas de rendimiento: los 'Minor Page Faults' se resuelven en memoria sin tocar disco, mientras que los 'Major Page Faults' exigen lecturas físicas lentas desde almacenamiento."
+      }
+    ];
+
+    /**
+     * ==========================================================================
+     * 9. ESTADO GLOBAL DE LA APLICACIÓN Y CONTROLADORES
+     * ==========================================================================
+     */
+    const AppState = {
+      currentQuestion: null,
+      selectedOptionIndex: null,
+      hasBeenEvaluated: false,
+      wasRevealedWithoutAnswer: false,
+      
+      // Estadísticas acumuladas de la sesión
+      stats: {
+        totalAnswered: 0,
+        totalCorrect: 0,
+        totalWrong: 0,
+        byCategory: {
+          Hardware: 0,
+          Software: 0
+        },
+        byDifficulty: {
+          Fácil: 0,
+          Media: 0,
+          Difícil: 0,
+          Experto: 0
+        }
+      }
+    };
+
+    // Referencias al DOM
+    const DOM = {
+      // Filtros y botones superiores
+      filterCategory: document.getElementById('filter-category'),
+      filterDifficulty: document.getElementById('filter-difficulty'),
+      btnDraw: document.getElementById('btn-draw-question'),
+      btnStartHero: document.getElementById('btn-start-hero'),
+      btnResetSession: document.getElementById('btn-reset-session'),
+      
+      // Indicadores en el encabezado
+      quickAvailable: document.getElementById('quick-available-count'),
+      quickAnswered: document.getElementById('quick-answered-count'),
+      quickAccuracy: document.getElementById('quick-accuracy-percent'),
+      quickFilterState: document.getElementById('quick-filter-state'),
+      
+      // Vistas de la tarjeta de pregunta
+      emptyStateView: document.getElementById('empty-state-view'),
+      activeQuestionView: document.getElementById('active-question-view'),
+      
+      // Elementos de la pregunta activa
+      badgeId: document.getElementById('badge-question-id'),
+      badgeCategory: document.getElementById('badge-question-category'),
+      badgeDifficulty: document.getElementById('badge-question-difficulty'),
+      turnDot: document.getElementById('turn-dot'),
+      turnStatusText: document.getElementById('turn-status-text'),
+      questionText: document.getElementById('question-text'),
+      optionsContainer: document.getElementById('options-container'),
+      
+      // Botones de acción de la pregunta
+      btnCheck: document.getElementById('btn-check-answer'),
+      btnReveal: document.getElementById('btn-reveal-answer'),
+      btnNext: document.getElementById('btn-next-question'),
+      
+      // Panel de retroalimentación
+      feedbackPanel: document.getElementById('feedback-panel'),
+      statusIconBox: document.getElementById('status-icon-box'),
+      statusTitle: document.getElementById('feedback-status-title'),
+      statusSubtitle: document.getElementById('feedback-status-subtitle'),
+      correctExplanation: document.getElementById('feedback-correct-explanation'),
+      optionsAnalysisList: document.getElementById('feedback-options-analysis'),
+      learningPoint: document.getElementById('feedback-learning-point'),
+      
+      // Panel de estadísticas de sesión
+      statTotalAnswered: document.getElementById('stats-total-answered'),
+      statTotalCorrect: document.getElementById('stats-total-correct'),
+      statTotalWrong: document.getElementById('stats-total-wrong'),
+      statAccuracyPercent: document.getElementById('stats-accuracy-percent'),
+      statProgressFill: document.getElementById('stats-progress-fill'),
+      statCatHardware: document.getElementById('stat-cat-hardware'),
+      statCatSoftware: document.getElementById('stat-cat-software'),
+      statDifFacil: document.getElementById('stat-dif-facil'),
+      statDifMedia: document.getElementById('stat-dif-media'),
+      statDifDificil: document.getElementById('stat-dif-dificil'),
+      statDifExperto: document.getElementById('stat-dif-experto'),
+
+      // Toast
+      toast: document.getElementById('toast-notification'),
+      toastMessage: document.getElementById('toast-message')
+    };
+
+    /**
+     * ==========================================================================
+     * 10. FUNCIONES DE LÓGICA Y NEGOCIO
+     * ==========================================================================
+     */
+
+    /**
+     * Muestra una notificación temporal no invasiva (Toast)
+     */
+    let toastTimeout = null;
+    function showToast(message) {
+      if (toastTimeout) clearTimeout(toastTimeout);
+      DOM.toastMessage.textContent = message;
+      DOM.toast.classList.add('visible');
+      toastTimeout = setTimeout(() => {
+        DOM.toast.classList.remove('visible');
+      }, 3200);
+    }
+
+    /**
+     * Obtiene el subconjunto de preguntas que coinciden con los filtros
+     */
+    function getFilteredQuestions() {
+      const selectedCat = DOM.filterCategory.value;
+      const selectedDif = DOM.filterDifficulty.value;
+
+      return QUESTION_BANK.filter(q => {
+        const matchesCategory = (selectedCat === "Todas") || (q.category === selectedCat);
+        const matchesDifficulty = (selectedDif === "Todas") || (q.difficulty === selectedDif);
+        return matchesCategory && matchesDifficulty;
+      });
+    }
+
+    /**
+     * Actualiza los contadores de disponibilidad en la interfaz
+     */
+    function updateFilterCounters() {
+      const matchingQuestions = getFilteredQuestions();
+      DOM.quickAvailable.textContent = matchingQuestions.length;
+
+      const catText = DOM.filterCategory.value === "Todas" ? "Todas las categorías" : DOM.filterCategory.value;
+      const difText = DOM.filterDifficulty.value === "Todas" ? "Todos los niveles" : DOM.filterDifficulty.value;
+      DOM.quickFilterState.textContent = `Filtro actual: ${catText} • ${difText}`;
+    }
+
+    /**
+     * Sortea una pregunta aleatoria aplicando aleatoriedad real del navegador.
+     * Permite repetición si vuelve a salir (requisito 6.3).
+     */
+    function drawRandomQuestion() {
+      const pool = getFilteredQuestions();
+
+      if (pool.length === 0) {
+        showToast("No existen preguntas que coincidan con la combinación de filtros seleccionada.");
+        return;
+      }
+
+      // Sorteo aleatorio real
+      const randomIndex = Math.floor(Math.random() * pool.length);
+      const chosenQuestion = pool[randomIndex];
+
+      loadQuestion(chosenQuestion);
+      showToast(`Pregunta #${chosenQuestion.id} sorteada exitosamente.`);
+    }
+
+    /**
+     * Carga una pregunta seleccionada en la vista interactiva
+     */
+    function loadQuestion(q) {
+      AppState.currentQuestion = q;
+      AppState.selectedOptionIndex = null;
+      AppState.hasBeenEvaluated = false;
+      AppState.wasRevealedWithoutAnswer = false;
+
+      // Ocultar estado inicial y mostrar la tarjeta activa
+      DOM.emptyStateView.style.display = 'none';
+      DOM.activeQuestionView.classList.add('active');
+
+      // Actualizar Badges
+      DOM.badgeId.textContent = `Pregunta #${q.id}`;
+      
+      DOM.badgeCategory.textContent = q.category;
+      DOM.badgeCategory.className = 'badge ' + (q.category === 'Hardware' ? 'badge-hardware' : 'badge-software');
+
+      DOM.badgeDifficulty.textContent = q.difficulty;
+      let diffClass = 'badge-facil';
+      if (q.difficulty === 'Media') diffClass = 'badge-media';
+      if (q.difficulty === 'Difícil') diffClass = 'badge-dificil';
+      if (q.difficulty === 'Experto') diffClass = 'badge-experto';
+      DOM.badgeDifficulty.className = `badge ${diffClass}`;
+
+      // Estado del turno
+      DOM.turnDot.className = 'turn-status-dot active';
+      DOM.turnStatusText.textContent = "Turno en deliberación (esperando selección)";
+
+      // Enunciado
+      DOM.questionText.textContent = q.question;
+
+      // Renderizar las 4 opciones limpias
+      renderOptions(q.options);
+
+      // Resetear botones de acción
+      DOM.btnCheck.disabled = true;
+      DOM.btnCheck.style.display = 'inline-flex';
+      DOM.btnReveal.disabled = false;
+
+      // Ocultar panel de retroalimentación previo
+      DOM.feedbackPanel.style.display = 'none';
+
+      // Scroll suave hacia la tarjeta de pregunta si está abajo en pantallas pequeñas
+      DOM.activeQuestionView.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /**
+     * Renderiza las cuatro opciones (A, B, C, D)
+     */
+    function renderOptions(optionsArray) {
+      DOM.optionsContainer.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+
+      optionsArray.forEach((optText, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option-btn';
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', 'false');
+        btn.dataset.index = index;
+
+        btn.innerHTML = `
+          <div class="option-letter">${letters[index]}</div>
+          <div class="option-text">${optText}</div>
+        `;
+
+        btn.addEventListener('click', () => handleOptionSelect(index));
+        DOM.optionsContainer.appendChild(btn);
+      });
+    }
+
+    /**
+     * Maneja la selección visual de una opción antes de comprobar
+     */
+    function handleOptionSelect(index) {
+      if (AppState.hasBeenEvaluated || AppState.wasRevealedWithoutAnswer) {
+        return; // Ya fue cerrada la deliberación de este turno
+      }
+
+      AppState.selectedOptionIndex = index;
+      DOM.btnCheck.disabled = false;
+      DOM.turnStatusText.textContent = `Opción ${['A','B','C','D'][index]} seleccionada (lista para comprobar)`;
+
+      const allOptionButtons = DOM.optionsContainer.querySelectorAll('.option-btn');
+      allOptionButtons.forEach((btn, idx) => {
+        if (idx === index) {
+          btn.classList.add('selected');
+          btn.setAttribute('aria-checked', 'true');
+        } else {
+          btn.classList.remove('selected');
+          btn.setAttribute('aria-checked', 'false');
+        }
+      });
+    }
+
+    /**
+     * Comprueba la respuesta seleccionada y actualiza estadísticas
+     */
+    function checkAnswer() {
+      if (AppState.selectedOptionIndex === null) {
+        showToast("Por favor selecciona una opción antes de comprobar.");
+        return;
+      }
+
+      if (AppState.hasBeenEvaluated) {
+        showToast("Esta pregunta ya fue contabilizada en este turno.");
+        return;
+      }
+
+      const q = AppState.currentQuestion;
+      const isCorrect = (AppState.selectedOptionIndex === q.correctAnswer);
+      AppState.hasBeenEvaluated = true;
+
+      // Actualizar contadores de estadísticas (solo una vez por turno)
+      AppState.stats.totalAnswered += 1;
+      if (isCorrect) {
+        AppState.stats.totalCorrect += 1;
+      } else {
+        AppState.stats.totalWrong += 1;
+      }
+
+      // Distribución
+      AppState.stats.byCategory[q.category] += 1;
+      AppState.stats.byDifficulty[q.difficulty] += 1;
+
+      // Actualizar interfaz de resultados
+      updateStatsUI();
+
+      // Aplicar estilos visuales a las opciones
+      highlightOptionsOutcome(q.correctAnswer, AppState.selectedOptionIndex);
+
+      // Desplegar retroalimentación educativa
+      showFeedbackPanel(isCorrect ? 'correct' : 'wrong', q);
+
+      // Desactivar botón de comprobar para evitar re-conteo
+      DOM.btnCheck.disabled = true;
+      DOM.btnReveal.disabled = true;
+      DOM.turnDot.className = 'turn-status-dot';
+      DOM.turnStatusText.textContent = isCorrect ? "¡Respuesta correcta registrada!" : "Respuesta incorrecta registrada.";
+
+      showToast(isCorrect ? "¡Excelente! Respuesta técnicamente correcta." : "Respuesta incorrecta. Revisa el análisis detallado.");
+    }
+
+    /**
+     * Revela la respuesta y explicación técnica sin calificar
+     * (Herramienta pedagógica para el instructor en debates grupales)
+     */
+    function revealAnswer() {
+      if (AppState.hasBeenEvaluated) {
+        showToast("La respuesta ya fue evaluada.");
+        return;
+      }
+
+      const q = AppState.currentQuestion;
+      AppState.wasRevealedWithoutAnswer = true;
+
+      // Resaltar la opción correcta y atenuar las demás
+      highlightOptionsOutcome(q.correctAnswer, null);
+
+      // Mostrar retroalimentación en modo "Revelado"
+      showFeedbackPanel('revealed', q);
+
+      // Deshabilitar controles de respuesta de este turno
+      DOM.btnCheck.disabled = true;
+      DOM.btnReveal.disabled = true;
+      DOM.turnDot.className = 'turn-status-dot';
+      DOM.turnStatusText.textContent = "Solución revelada para discusión grupal (no afecta puntaje).";
+
+      showToast("Solución revelada para discusión técnica con el grupo.");
+    }
+
+    /**
+     * Aplica clases a las opciones luego de comprobar o revelar
+     */
+    function highlightOptionsOutcome(correctIndex, userSelectedIndex) {
+      const allButtons = DOM.optionsContainer.querySelectorAll('.option-btn');
+
+      allButtons.forEach((btn, idx) => {
+        btn.classList.remove('selected');
+
+        if (idx === correctIndex) {
+          btn.classList.add('correct-choice');
+        } else if (userSelectedIndex !== null && idx === userSelectedIndex) {
+          btn.classList.add('wrong-choice');
+        } else {
+          btn.classList.add('dimmed');
+        }
+
+        btn.disabled = true;
+      });
+    }
+
+    /**
+     * Presenta y llena el panel de retroalimentación estructurada
+     */
+    function showFeedbackPanel(statusMode, question) {
+      const letters = ['A', 'B', 'C', 'D'];
+
+      // Configurar encabezado del estado
+      if (statusMode === 'correct') {
+        DOM.statusIconBox.className = 'status-icon-wrap correct';
+        DOM.statusIconBox.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        DOM.statusTitle.textContent = "¡Respuesta Correcta!";
+        DOM.statusSubtitle.textContent = `La opción ${letters[question.correctAnswer]} resuelve técnicamente el problema.`;
+      } else if (statusMode === 'wrong') {
+        DOM.statusIconBox.className = 'status-icon-wrap wrong';
+        DOM.statusIconBox.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+        DOM.statusTitle.textContent = "Respuesta Incorrecta";
+        DOM.statusSubtitle.textContent = `La opción acertada es la ${letters[question.correctAnswer]}. Analiza los fundamentos a continuación:`;
+      } else {
+        DOM.statusIconBox.className = 'status-icon-wrap revealed';
+        DOM.statusIconBox.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+        DOM.statusTitle.textContent = "Solución y Análisis Pedagógico";
+        DOM.statusSubtitle.textContent = `Opción correcta: ${letters[question.correctAnswer]}. Discusión técnica guiada por el instructor.`;
+      }
+
+      // Explicación principal de la respuesta correcta
+      DOM.correctExplanation.textContent = question.explanation;
+
+      // Desglose de cada una de las 4 opciones
+      DOM.optionsAnalysisList.innerHTML = '';
+      question.options.forEach((optText, i) => {
+        const item = document.createElement('div');
+        const isKey = (i === question.correctAnswer);
+        item.className = 'option-analysis-item' + (isKey ? ' is-correct-key' : '');
+
+        item.innerHTML = `
+          <span class="analysis-pill ${isKey ? 'correct' : 'incorrect'}">Opción ${letters[i]}</span>
+          <div>
+            <strong>${optText}</strong>
+            <p style="margin-top: 0.2rem; color: var(--text-muted); font-size: 0.88rem;">${question.optionAnalysis[i]}</p>
+          </div>
+        `;
+        DOM.optionsAnalysisList.appendChild(item);
+      });
+
+      // Dato adicional o profundización
+      DOM.learningPoint.textContent = question.learningPoint;
+
+      // Hacer visible el bloque
+      DOM.feedbackPanel.style.display = 'flex';
+      DOM.feedbackPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /**
+     * Actualiza las métricas y porcentajes en la interfaz
+     */
+    function updateStatsUI() {
+      const { totalAnswered, totalCorrect, totalWrong, byCategory, byDifficulty } = AppState.stats;
+
+      // Porcentaje de efectividad
+      const percent = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+
+      // Barra y resumen rápido de encabezado
+      DOM.quickAnswered.textContent = totalAnswered;
+      DOM.quickAccuracy.textContent = `${percent}%`;
+
+      // Tarjetas del panel de resultados
+      DOM.statTotalAnswered.textContent = totalAnswered;
+      DOM.statTotalCorrect.textContent = totalCorrect;
+      DOM.statTotalWrong.textContent = totalWrong;
+      DOM.statAccuracyPercent.textContent = `${percent}%`;
+      DOM.statProgressFill.style.width = `${percent}%`;
+
+      // Desglose por categoría
+      DOM.statCatHardware.textContent = byCategory.Hardware;
+      DOM.statCatSoftware.textContent = byCategory.Software;
+
+      // Desglose por dificultad
+      DOM.statDifFacil.textContent = byDifficulty.Fácil;
+      DOM.statDifMedia.textContent = byDifficulty.Media;
+      DOM.statDifDificil.textContent = byDifficulty.Difícil;
+      DOM.statDifExperto.textContent = byDifficulty.Experto;
+    }
+
+    /**
+     * Reinicia todas las estadísticas de la sesión en memoria
+     */
+    function resetSessionStats() {
+      AppState.stats.totalAnswered = 0;
+      AppState.stats.totalCorrect = 0;
+      AppState.stats.totalWrong = 0;
+      AppState.stats.byCategory = { Hardware: 0, Software: 0 };
+      AppState.stats.byDifficulty = { Fácil: 0, Media: 0, Difícil: 0, Experto: 0 };
+
+      updateStatsUI();
+      showToast("Estadísticas de la sesión reiniciadas a cero.");
+    }
+
+    /**
+     * ==========================================================================
+     * 11. ASIGNACIÓN DE EVENTOS Y ACCESIBILIDAD POR TECLADO
+     * ==========================================================================
+     */
+    function initEventListeners() {
+      // Cambio en filtros
+      DOM.filterCategory.addEventListener('change', updateFilterCounters);
+      DOM.filterDifficulty.addEventListener('change', updateFilterCounters);
+
+      // Botón principal Sortear
+      DOM.btnDraw.addEventListener('click', drawRandomQuestion);
+      DOM.btnStartHero.addEventListener('click', drawRandomQuestion);
+
+      // Botón comprobar y revelar
+      DOM.btnCheck.addEventListener('click', checkAnswer);
+      DOM.btnReveal.addEventListener('click', revealAnswer);
+
+      // Botón siguiente / sortear otra
+      DOM.btnNext.addEventListener('click', drawRandomQuestion);
+
+      // Reiniciar estadísticas
+      DOM.btnResetSession.addEventListener('click', resetSessionStats);
+
+      // Atajos de teclado para dinamizar la estación en el aula presencial
+      // 1, 2, 3, 4 o A, B, C, D para marcar opciones; Enter para comprobar; Barra espaciadora para sortear
+      document.addEventListener('keydown', (e) => {
+        // Ignorar si el usuario está interactuando con un elemento select
+        if (e.target.tagName === 'SELECT') return;
+
+        const key = e.key.toUpperCase();
+
+        // Selección de opciones 1..4 o A..D
+        if (!AppState.hasBeenEvaluated && !AppState.wasRevealedWithoutAnswer && AppState.currentQuestion) {
+          if (key === '1' || key === 'A') handleOptionSelect(0);
+          if (key === '2' || key === 'B') handleOptionSelect(1);
+          if (key === '3' || key === 'C') handleOptionSelect(2);
+          if (key === '4' || key === 'D') handleOptionSelect(3);
+        }
+
+        // Enter para comprobar si hay opción seleccionada
+        if (e.key === 'Enter' && !DOM.btnCheck.disabled && !AppState.hasBeenEvaluated) {
+          e.preventDefault();
+          checkAnswer();
+        }
+      });
+    }
+
+    /**
+     * Inicialización en carga de página
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      updateFilterCounters();
+      updateStatsUI();
+      initEventListeners();
+    });
+
+  </script>
+</body>
+</html>
